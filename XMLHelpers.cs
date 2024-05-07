@@ -108,14 +108,13 @@ namespace SaveTheOcean2
             xmlDoc.Save("player.xml");
         }
 
-        public static void AddXp(int value)
+        public static void AddXp(int value, string filePath)
         {
             XmlDocument xmlDoc = new XmlDocument();
-            xmlDoc.Load("player.xml");
+            xmlDoc.Load(filePath);
             XmlNodeList playerNodes = xmlDoc.SelectNodes("//Player[Jugando='true']");
             foreach (XmlNode playerNode in playerNodes)
             {
-
                 string playerName = playerNode.SelectSingleNode("Name").InnerText;
                 int currentXp = int.Parse(playerNode.SelectSingleNode("Xp").InnerText);
                 int newXp = currentXp + value;
@@ -123,8 +122,9 @@ namespace SaveTheOcean2
                 MessageBox.Show($"Has ganado {value} puntos de experiencia. Tu total de puntos de experiencia es: {newXp}");
             }
 
-            xmlDoc.Save("player.xml");
+            xmlDoc.Save(filePath);
         }
+
 
         // Método para obtener el jugador actualmente jugando
         public static Player GetCurrentPlayer()
