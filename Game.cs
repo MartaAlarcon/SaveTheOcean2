@@ -145,6 +145,8 @@ namespace SalvaOceano
                     XMLHelpers.AddXp(-20);
                 }
             }
+            XMLHelpers.AddFalsePlay();
+
             Close();
         }
 
@@ -224,6 +226,9 @@ namespace SalvaOceano
 
                 }
             }
+
+            XMLHelpers.AddFalsePlay();
+
             Close();
         }
     }

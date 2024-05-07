@@ -10,7 +10,6 @@ namespace SalvaOceano
 
         private void play_Click(object sender, EventArgs e)
         {
-            XMLHelpers.AddFalsePlay();
 
 
             Hide();

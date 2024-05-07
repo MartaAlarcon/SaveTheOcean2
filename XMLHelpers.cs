@@ -12,7 +12,6 @@ namespace SaveTheOcean2
                 XmlDocument xmlDoc = new XmlDocument();
                 xmlDoc.Load(filePath);
 
-
                 // Verificar si el jugador ya existe en el archivo XML
                 if (PlayerExists(xmlDoc, player))
                 {
@@ -22,99 +21,81 @@ namespace SaveTheOcean2
             }
             else
             {
-                File.Create(filePath).Close();
+                // Si el archivo no existe, crearlo con la estructura inicial
+                CreateInitialXMLFile(filePath);
             }
 
             // Si el archivo no existe o el jugador no existe, crear o agregar el jugador
             AddPlayerToXML(player, filePath);
         }
 
+        private static void CreateInitialXMLFile(string filePath)
+        {
+            try
+            {
+                // Crear el documento XML con la estructura inicial
+                XmlDocument xmlDoc = new XmlDocument();
+                XmlElement playersListElement = xmlDoc.CreateElement("PlayersList");
+                xmlDoc.AppendChild(playersListElement);
+                xmlDoc.Save(filePath);
+                Console.WriteLine("Archivo XML creado correctamente.");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error al crear el archivo XML: {ex.Message}");
+            }
+        }
+
         private static bool PlayerExists(XmlDocument xmlDoc, Player player)
         {
-            // Buscar todos los nodos de jugador en el documento XML
             XmlNodeList playerNodes = xmlDoc.SelectNodes("//Player");
 
-            // Iterar sobre cada nodo de jugador
             foreach (XmlNode playerNode in playerNodes)
             {
-                // Obtener el nombre y el rol del jugador existente
                 string playerName = playerNode.SelectSingleNode("Name").InnerText;
                 string playerRol = playerNode.SelectSingleNode("Rol").InnerText;
 
-
-                // Verificar si el nombre y el rol del jugador existente coinciden con el jugador actual
                 if (playerName == player.Name && playerRol == player.Rol)
                 {
                     playerNode.SelectSingleNode("Jugando").InnerText = "true";
                     xmlDoc.Save("player.xml");
-                    return true; // El jugador ya existe en el archivo XML
+                    return true;
                 }
             }
 
-            return false; // El jugador no existe en el archivo XML
+            return false;
         }
 
-            private static void AddPlayerToXML(Player player, string filePath)
-            {
-                // Crear un nuevo documento XML si el archivo no existe
-                if (!File.Exists(filePath))
-                {
-                    XmlDocument xmlDoc = new XmlDocument();
+        private static void AddPlayerToXML(Player player, string filePath)
+        {
+            XmlDocument xmlDoc = new XmlDocument();
+            xmlDoc.Load(filePath);
 
-                    // Crear el elemento raíz
-                    XmlElement playersElement = xmlDoc.CreateElement("PlayersList");
-                    xmlDoc.AppendChild(playersElement);
+            XmlElement playersListElement = xmlDoc.DocumentElement;
+            AddPlayerNode(xmlDoc, playersListElement, player);
 
-                    // Agregar el jugador como un nodo al elemento raíz
-                    AddPlayerNode(xmlDoc, playersElement, player);
+            xmlDoc.Save(filePath);
+            Console.WriteLine("Jugador agregado al documento XML existente.");
+        }
 
-                    // Guardar el documento XML en el archivo especificado
-                    xmlDoc.Save(filePath);
+        private static void AddPlayerNode(XmlDocument xmlDoc, XmlElement parentElement, Player player)
+        {
+            XmlElement playerElement = xmlDoc.CreateElement("Player");
+            parentElement.AppendChild(playerElement);
 
-                    Console.WriteLine("Documento XML creado correctamente.");
-                }
-                else
-                {
-                    XmlDocument xmlDoc = new XmlDocument();
-                    xmlDoc.Load(filePath);
-
-                    // Obtener el elemento raíz
-                    XmlElement playersElement = xmlDoc.DocumentElement;
-
-                    // Agregar el jugador como un nodo al elemento raíz
-                    AddPlayerNode(xmlDoc, playersElement, player);
-
-                    // Guardar el documento XML en el archivo especificado
-                    xmlDoc.Save(filePath);
-
-                    Console.WriteLine("Jugador agregado al documento XML existente.");
-                }
-            }
-
-            private static void AddPlayerNode(XmlDocument xmlDoc, XmlElement parentElement, Player player)
-            {
-                // Crear el nodo para el jugador
-                XmlElement playerElement = xmlDoc.CreateElement("Player");
-                parentElement.AppendChild(playerElement);
-
-                // Agregar los elementos hijos al nodo del jugador
-                AddChildElement(xmlDoc, playerElement, "Name", player.Name);
-                AddChildElement(xmlDoc, playerElement, "Rol", player.Rol);
-                AddChildElement(xmlDoc, playerElement, "Xp", player.Xp.ToString());
-                AddChildElement(xmlDoc, playerElement, "Jugando", player.Play.ToString());
-     
-        
-
+            AddChildElement(xmlDoc, playerElement, "Name", player.Name);
+            AddChildElement(xmlDoc, playerElement, "Rol", player.Rol);
+            AddChildElement(xmlDoc, playerElement, "Xp", player.Xp.ToString());
+            AddChildElement(xmlDoc, playerElement, "Jugando", player.Play.ToString());
         }
 
         private static void AddChildElement(XmlDocument xmlDoc, XmlElement parentElement, string elementName, string value)
         {
-            // Crear el elemento hijo
             XmlElement childElement = xmlDoc.CreateElement(elementName);
             childElement.InnerText = value;
             parentElement.AppendChild(childElement);
         }
-        
+
         public static void AddFalsePlay()
         {
             XmlDocument xmlDoc = new XmlDocument();
@@ -139,9 +120,9 @@ namespace SaveTheOcean2
                 int currentXp = int.Parse(playerNode.SelectSingleNode("Xp").InnerText);
                 int newXp = currentXp + value;
                 playerNode.SelectSingleNode("Xp").InnerText = newXp.ToString();
-                MessageBox.Show($"Has guanyat {value} punts d'experiència. El teu total de punts d'experiència és: {newXp}");
+                MessageBox.Show($"Has ganado {value} puntos de experiencia. Tu total de puntos de experiencia es: {newXp}");
             }
-            
+
             xmlDoc.Save("player.xml");
         }
 
